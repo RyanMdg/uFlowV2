@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
 import styles from "./styles/HomeStyles";
 import btn from "./styles/ButtonStyle";
+import "react-native-get-random-values";
 
 const App = () => {
   const [isReady, setIsReady] = useState(false);

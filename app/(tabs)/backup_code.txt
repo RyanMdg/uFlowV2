@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+map
+
+import React, { useState, useEffect, useContext } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { StyleSheet, View, Image } from "react-native";
 import MapViewStyle from "../utils/MapViewStyle.json";
+import { UserLocationContext } from "../Context/UserLocation";
 import * as Location from "expo-location";
 import Header from "../../components/header";
 import SearchBar from "../../components/searchBar";
@@ -18,14 +21,9 @@ export default function App() {
     longitudeDelta: 0.0421,
   });
   const [placeList, setPlaceList] = useState([]);
-
-  // Fetch nearby places when the location is available
   useEffect(() => {
-    if (location) {
-      GetNearByPlace();
-    }
+    location && GetNearByPlace();
   }, [location]);
-
   const GetNearByPlace = () => {
     const data = {
       includedTypes: [
@@ -46,11 +44,10 @@ export default function App() {
         },
       },
     };
-
     GlobalApi.NewNearByPlace(data)
       .then((resp) => {
         console.log(JSON.stringify(resp.data));
-        setPlaceList(resp.data?.places); // Set the place list
+        setPlaceList(resp.data?.places); // Log full response to inspect the structure
       })
       .catch((err) => {
         console.error(
@@ -60,7 +57,6 @@ export default function App() {
       });
   };
 
-  // Get current location
   useEffect(() => {
     async function getCurrentLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -74,8 +70,8 @@ export default function App() {
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.005, // Zoomed in
-        longitudeDelta: 0.005,
+        latitudeDelta: 0.005, // Smaller delta for more zoomed-in view
+        longitudeDelta: 0.005, // Smaller delta for more zoomed-in view
       });
       console.log(location);
     }
@@ -93,18 +89,18 @@ export default function App() {
   return (
     location?.latitude && (
       <View style={styles.container}>
-        {/* Header and Search Bar */}
         <View style={styles.headerContainer}>
           <Header />
           <SearchBar searchLocation={(location) => console.log(location)} />
         </View>
 
-        {/* Map */}
         <MapView
+          placeList={placeList}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
           customMapStyle={MapViewStyle}
-          region={region}
+          //showsUserLocation={true}
+          region={region} // Using the updated region here
         >
           <Marker
             coordinate={{
@@ -117,14 +113,10 @@ export default function App() {
               style={{ width: 30, height: 30, resizeMode: "contain" }}
             />
           </Marker>
-        </MapView>
-
-        {/* Place List View */}
-        {placeList.length > 0 && (
           <View style={styles.placeListContainer}>
-            <PlaceLIstView placeList={placeList} />
+            {placeList && <PlaceLIstView placeList={placeList} />}
           </View>
-        )}
+        </MapView>
       </View>
     )
   );
@@ -148,10 +140,7 @@ const styles = StyleSheet.create({
   placeListContainer: {
     position: "absolute",
     bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 20, // Ensure it appears above the map
-
-    padding: 10,
+    zIndex: 10,
+    width: "100%",
   },
 });

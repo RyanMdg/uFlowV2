@@ -69,6 +69,7 @@ export default function HomeLayout() {
         name="map"
         options={{
           tabBarLabel: "Map",
+          tabBarStyle: { display: "none" }, // Hide tab bar when on the Map screen
           tabBarIcon: ({ focused, size }) => (
             <Image
               source={require("../../assets/images/map.png")} // Path to your image
@@ -82,6 +83,7 @@ export default function HomeLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="routes"
         options={{
