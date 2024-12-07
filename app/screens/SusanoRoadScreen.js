@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React from "react";
-import RouteSearchBar from "../../components/routeSearchBar";
+import AlerSearchBar from "../../components/alertSearchBar.js";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "react-native-vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,14 +21,16 @@ const Routes = () => {
     <View>
       {/* Header Section */}
       <View style={styles.topContainer}>
-        <Text style={styles.topText}>Want to Commute?</Text>
+        <Text style={styles.topText}>
+          Available Transpo in {"\n"} Susano Road
+        </Text>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
       </View>
 
       {/* Search Bar Component */}
-      <RouteSearchBar />
+      <AlerSearchBar />
 
       {/* Jeepney Loading Section */}
       <LinearGradient
@@ -40,11 +42,10 @@ const Routes = () => {
         <View>
           <Text style={styles.insideText}>Jeepneys</Text>
           <View style={styles.insideContainer}>
-            <ActivityIndicator
-              size="large"
-              color="#000"
-              style={{ opacity: 0.2 }}
-            />
+            <Text>Beside Jule's Bakeshop - Anytime</Text>
+            <ul>
+              <li>JSGWU JODA</li>
+            </ul>
           </View>
         </View>
       </LinearGradient>
@@ -59,11 +60,7 @@ const Routes = () => {
         <View>
           <Text style={styles.insideText}>Tricycle</Text>
           <View style={styles.insideContainer}>
-            <ActivityIndicator
-              size="large"
-              color="#000"
-              style={{ opacity: 0.2 }}
-            />
+            <ActivityIndicator size="large" color="#000" />
           </View>
         </View>
       </LinearGradient>
@@ -86,7 +83,7 @@ const styles = StyleSheet.create({
   },
   topText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 400,
     color: "#003366",
   },
   backButton: {
@@ -107,11 +104,12 @@ const styles = StyleSheet.create({
   },
   insideContainer: {
     backgroundColor: "#fff",
-    height: "80%",
+    height: "75%",
     padding: 10,
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
+    height: "80%",
   },
 });

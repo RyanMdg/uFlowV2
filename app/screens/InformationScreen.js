@@ -183,7 +183,7 @@ const InformationScreen = () => {
                           source={require("../../assets/images/user1.png")} // Replace with your local image path
                           style={styles.avatar}
                         />
-                        <Text style={styles.commentName}>{item.username}</Text>
+                        <Text style={styles.commentName}>{item.userame}</Text>
                       </View>
 
                       <Text style={styles.commentText}>{item.text}</Text>
