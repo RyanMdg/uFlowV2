@@ -1,15 +1,79 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  FlatList,
+  TextInput,
+  Modal,
+  ScrollView,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import crashImage from "../../assets/images/crash1.png"; // Import the local image
 import { Ionicons } from "react-native-vector-icons"; // Import Ionicons for icons
 import { useNavigation } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 
 const InformationScreen = () => {
   const [location, setLocation] = useState("");
   const [liked, setLiked] = useState(false); // Track whether the post is liked
+  const [modalVisible, setModalVisible] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  const [username, setUsername] = useState("");
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
+
+        // Add hardcoded comments
+        setComments([
+          { id: "1", username: "Althea Joy", text: "Gagi Real Ba ? " },
+
+          {
+            id: "2",
+            username: "user32412",
+            text: "oo madam, mag move it ka nalang",
+          },
+          { id: "3", username: "Lorene Mae", text: "Thanks for the update." },
+          {
+            id: "4",
+            username: "Denisse Marie",
+            text: "Late na namn ako nito hays",
+          },
+        ]);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  const handleAddComment = () => {
+    if (comment.trim()) {
+      setComments((prevComments) => [
+        ...prevComments,
+        { id: Date.now().toString(), username, text: comment },
+      ]);
+      setComment("");
+    }
+  };
+
+  const CommentModal = () => {
+    setModalVisible(false); // Close modal if needed
+  };
+
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -29,6 +93,14 @@ const InformationScreen = () => {
     setLiked(!liked); // Toggle like state
   };
 
+  const openCommentModal = () => {
+    setModalVisible(true); // Open comment modal
+  };
+
+  const closeCommentModal = () => {
+    setModalVisible(false); // Close comment modal
+  };
+
   const handleBack = () => {
     navigation.goBack(); // Go back to the previous screen (home)
   };
@@ -41,11 +113,9 @@ const InformationScreen = () => {
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
       </View>
-
       <View style={styles.header}>
         <Text style={styles.text}>{location}</Text>
       </View>
-
       <LinearGradient
         colors={["#5e90b1", "#151d49"]}
         start={{ x: 0, y: 0 }}
@@ -70,7 +140,10 @@ const InformationScreen = () => {
           </TouchableOpacity>
 
           {/* Comment Button */}
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity
+            onPress={openCommentModal}
+            style={styles.iconButton}
+          >
             <Ionicons
               name="chatbubble-outline"
               size={24}
@@ -79,6 +152,66 @@ const InformationScreen = () => {
           </TouchableOpacity>
         </View>
       </LinearGradient>
+      {/* Modal for Comments */}
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeCommentModal}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <BlurView intensity={90} tint="dark" style={styles.modalOverlay}>
+            <View style={styles.overlayColor}>
+              <LinearGradient
+                colors={["#5e90b1", "#151d49"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.modalContainer}
+              >
+                <Text style={styles.modalTitle}>Comments</Text>
+
+                {/* Use FlatList for rendering comments */}
+                <FlatList
+                  data={comments}
+                  style={styles.flatlist}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <View style={styles.commentItem}>
+                      <View style={styles.avatarContainer}>
+                        <Image
+                          source={require("../../assets/images/user1.png")} // Replace with your local image path
+                          style={styles.avatar}
+                        />
+                        <Text style={styles.commentName}>{item.username}</Text>
+                      </View>
+
+                      <Text style={styles.commentText}>{item.text}</Text>
+                    </View>
+                  )}
+                  contentContainerStyle={styles.scrollViewContent}
+                />
+
+                {/* Comment input */}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Add a comment..."
+                  placeholderTextColor="#000"
+                  value={comment}
+                  onChangeText={setComment}
+                  onSubmitEditing={handleAddComment}
+                />
+                <TouchableOpacity
+                  onPress={handleAddComment}
+                  style={styles.sendButton}
+                >
+                  <Ionicons name="send" size={20} color="#003366" />
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
+          </BlurView>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -145,5 +278,94 @@ const styles = StyleSheet.create({
     right: 1,
     top: 25,
     color: "#003366",
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, .8)", // Optional semi-transparent background
+  },
+  input: {
+    color: "#000",
+    backgroundColor: "rgba(255, 255, 255, .5)",
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "100%",
+    height: "90%",
+  },
+  commentName: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#fff",
+    marginTop: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 400,
+    marginBottom: 10,
+    color: "#fff",
+  },
+  sendButton: {
+    position: "absolute",
+    right: 30, // Adjust this for spacing from the right edge
+    top: "100%",
+    transform: [{ translateY: -12 }], // Center the icon vertically
+  },
+  commentSection: {
+    marginBottom: 20,
+  },
+  commentText: {
+    fontSize: 14,
+    color: "#000",
+    marginBottom: 5,
+    backgroundColor: "#fff",
+    width: "70%",
+    paddingVertical: 7,
+    paddingHorizontal: 5,
+    borderRadius: 10,
+  },
+  closeModalButton: {
+    backgroundColor: "#003366",
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeModalText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  flatlist: {
+    borderWidth: 2,
+    borderColor: "#fff",
+    borderRadius: 20,
+    marginBottom: 20,
+    padding: 10,
+  },
+  scrollView: {
+    flex: 1, // Allow ScrollView to take the available height
+  },
+
+  scrollViewContent: {
+    paddingBottom: 20, // Add some space at the bottom of the list to make it easier to scroll
+  },
+
+  avatarContainer: {
+    marginRight: 10,
+    flexDirection: "row", // Space between the image and username
+  },
+  avatar: {
+    width: 30, // Adjust size of the avatar
+    height: 30, // Adjust size of the avatar
+    borderRadius: 15,
+    marginRight: 5,
+    marginBottom: 5,
   },
 });

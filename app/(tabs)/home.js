@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign } from "@expo/vector-icons"; // For heart icon
 import SearchBar from "../../components/HomeSearchBar";
 import { LinearGradient } from "expo-linear-gradient";
+import { BackHandler } from "react-native";
 
 // Add coordinates for each place
 const places = [
@@ -233,6 +234,20 @@ export default function Home() {
       )}
     </TouchableOpacity>
   );
+
+  useEffect(() => {
+    const backAction = () => {
+      // Optionally show a toast or confirm exit
+      return true; // Prevent default behavior of going back
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove(); // Cleanup the listener
+  }, []);
 
   return (
     <View style={styles.container}>
