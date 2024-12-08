@@ -29,7 +29,6 @@ const Routes = () => {
   return (
     <View>
       <View style={styles.header}>
-        <Text style={styles.headerFont}>Want to Commute?</Text>
         <TextInput
           style={styles.searchBar}
           placeholder="Search your destination..."
@@ -67,14 +66,13 @@ export default Routes;
 
 const styles = StyleSheet.create({
   header: {
-    margin: 20,
+    margin: 15,
   },
   headerFont: {
     color: "#151d49",
     fontSize: 24,
   },
   searchBar: {
-    marginTop: 10,
     padding: 10,
     borderWidth: 2,
     borderColor: "#151d49",
