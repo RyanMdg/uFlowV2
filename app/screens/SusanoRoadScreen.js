@@ -4,13 +4,13 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import React from "react";
 import AlerSearchBar from "../../components/alertSearchBar.js";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "react-native-vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Linking from "expo-linking";
 
 const Routes = () => {
   const navigation = useNavigation();
@@ -19,19 +19,25 @@ const Routes = () => {
     navigation.goBack(); // Go back to the previous screen (home)
   };
 
-  const openJoyRideApp = () => {
-    const joyRideAppUrl = "https://dev.angkas.com/v1/graphql"; // Replace this with JoyRide's URL scheme
-    Linking.canOpenURL(joyRideAppUrl).then((supported) => {
-      if (supported) {
-        Linking.openURL(joyRideAppUrl);
-      } else {
-        alert("JoyRide app not installed or URL not supported.");
-      }
-    });
-  };
-
   const todas = ["JSGWU TODA", "PQH TODA"];
-  const tricycle_todas = ["IQGQ TODA"];
+  const tricyle_todas = ["IQGQ TODA"];
+
+  // Function to open the Grab app link
+  const handleBookMototaxi = async () => {
+    const grabAppUrl =
+      "https://play.google.com/store/apps/details?id=com.grabtaxi.android"; // Replace with the appropriate URL scheme for the Grab app
+
+    try {
+      const supported = await Linking.canOpenURL(grabAppUrl);
+      if (supported) {
+        await Linking.openURL(grabAppUrl);
+      } else {
+        alert("Grab app is not installed or not supported.");
+      }
+    } catch (error) {
+      alert("Unable to open the Grab app.");
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -53,7 +59,7 @@ const Routes = () => {
       {/* Search Bar Component */}
       <AlerSearchBar />
 
-      {/* Jeepney Section */}
+      {/* Jeepney Loading Section */}
       <LinearGradient
         colors={["#5e90b1", "#151d49"]}
         start={{ x: 0, y: 0 }}
@@ -72,7 +78,7 @@ const Routes = () => {
         </View>
       </LinearGradient>
 
-      {/* Tricycle Section */}
+      {/* Tricycle Loading Section */}
       <LinearGradient
         colors={["#5e90b1", "#151d49"]}
         start={{ x: 0, y: 0 }}
@@ -82,7 +88,7 @@ const Routes = () => {
         <Text style={styles.insideText}>Tricycle</Text>
         <View style={styles.insideContainer}>
           <Text style={styles.header}>Beside Jule's Bakeshop - Anytime</Text>
-          {tricycle_todas.map((toda, index) => (
+          {tricyle_todas.map((toda, index) => (
             <View key={index} style={styles.listItem}>
               <Text style={styles.bullet}>•</Text>
               <Text style={styles.itemText}>{toda}</Text>
@@ -91,22 +97,20 @@ const Routes = () => {
         </View>
       </LinearGradient>
 
-      {/* Button to Open JoyRide App */}
-      <LinearGradient
-        colors={["#5e90b1", "#151d49"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.buttonContainer}
+      {/* Book a Mototaxi Button */}
+      <TouchableOpacity
+        onPress={handleBookMototaxi}
+        style={styles.bookButtonWrapper}
       >
-        <TouchableOpacity
-          onPress={openJoyRideApp}
-          style={styles.launchButton}
-          accessibilityRole="button"
-          accessibilityLabel="Open JoyRide app"
+        <LinearGradient
+          colors={["#5e90b1", "#151d49"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.bookButton}
         >
-          <Text style={styles.buttonText}>Open JoyRide App</Text>
-        </TouchableOpacity>
-      </LinearGradient>
+          <Text style={styles.bookButtonText}>BOOK A MOTOTAXI NOW!</Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -173,18 +177,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
-  buttonContainer: {
+  bookButtonWrapper: {
     marginHorizontal: 20,
-    borderRadius: 20,
-    padding: 15,
     marginTop: 20,
+    borderRadius: 20,
   },
-  launchButton: {
+  bookButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderRadius: 20,
     alignItems: "center",
   },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
+  bookButtonText: {
     color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
