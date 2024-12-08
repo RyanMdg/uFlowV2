@@ -10,6 +10,7 @@ import AlerSearchBar from "../../components/alertSearchBar.js";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "react-native-vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Linking from "expo-linking";
 
 const Routes = () => {
   const navigation = useNavigation();
@@ -18,7 +19,19 @@ const Routes = () => {
     navigation.goBack(); // Go back to the previous screen (home)
   };
 
+  const openJoyRideApp = () => {
+    const joyRideAppUrl = "https://dev.angkas.com/v1/graphql"; // Replace this with JoyRide's URL scheme
+    Linking.canOpenURL(joyRideAppUrl).then((supported) => {
+      if (supported) {
+        Linking.openURL(joyRideAppUrl);
+      } else {
+        alert("JoyRide app not installed or URL not supported.");
+      }
+    });
+  };
+
   const todas = ["JSGWU TODA", "PQH TODA"];
+  const tricycle_todas = ["IQGQ TODA"];
 
   return (
     <View style={styles.mainContainer}>
@@ -40,7 +53,7 @@ const Routes = () => {
       {/* Search Bar Component */}
       <AlerSearchBar />
 
-      {/* Jeepney Loading Section */}
+      {/* Jeepney Section */}
       <LinearGradient
         colors={["#5e90b1", "#151d49"]}
         start={{ x: 0, y: 0 }}
@@ -59,7 +72,7 @@ const Routes = () => {
         </View>
       </LinearGradient>
 
-      {/* Tricycle Loading Section */}
+      {/* Tricycle Section */}
       <LinearGradient
         colors={["#5e90b1", "#151d49"]}
         start={{ x: 0, y: 0 }}
@@ -68,8 +81,31 @@ const Routes = () => {
       >
         <Text style={styles.insideText}>Tricycle</Text>
         <View style={styles.insideContainer}>
-          <ActivityIndicator size="large" color="#000" />
+          <Text style={styles.header}>Beside Jule's Bakeshop - Anytime</Text>
+          {tricycle_todas.map((toda, index) => (
+            <View key={index} style={styles.listItem}>
+              <Text style={styles.bullet}>•</Text>
+              <Text style={styles.itemText}>{toda}</Text>
+            </View>
+          ))}
         </View>
+      </LinearGradient>
+
+      {/* Button to Open JoyRide App */}
+      <LinearGradient
+        colors={["#5e90b1", "#151d49"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.buttonContainer}
+      >
+        <TouchableOpacity
+          onPress={openJoyRideApp}
+          style={styles.launchButton}
+          accessibilityRole="button"
+          accessibilityLabel="Open JoyRide app"
+        >
+          <Text style={styles.buttonText}>Open JoyRide App</Text>
+        </TouchableOpacity>
       </LinearGradient>
     </View>
   );
@@ -136,5 +172,19 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 14,
     color: "#333",
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    borderRadius: 20,
+    padding: 15,
+    marginTop: 20,
+  },
+  launchButton: {
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
   },
 });
